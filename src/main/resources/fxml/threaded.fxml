@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Label?>
+
+
+<VBox prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.uchicago.mhmcdonald.BallController">
+    <children>
+
+        <Pane fx:id="ballPane" minHeight="0.0" minWidth="0.0" prefHeight="600.0" prefWidth="1000.0">
+
+        </Pane>
+        <ToolBar prefHeight="150.0" prefWidth="1000.0">
+            <items>
+                <ColorPicker fx:id="cpkColor" />
+                <Label text="Radius Size" />
+                <Slider fx:id="ballSize" value="50.0" />
+                <Button fx:id="addBallButton" mnemonicParsing="false" text="Add Ball" />
+            </items>
+            <items>
+                <Separator > </Separator>
+                <Label text="Time Between Frames:" />
+                <Slider fx:id="timeSize" value="10.0" />
+                <Button fx:id="timeButton" mnemonicParsing="false" text="Set" />
+                <Separator > </Separator>
+                <Label text="Ball Count:" />
+                <Label fx:id ="ballCount" text="" />
+            </items>
+        </ToolBar>
+    </children>
+</VBox>
