@@ -180,6 +180,8 @@ public class BallController implements Initializable {
             public void handle(long timestamp) {
                 try
                 {
+                    /*this code determines the time lapse between animation. extending the duration
+                    obviously results in a lag between animations, and thus creates a choppier appearance*/
                     Thread.sleep(mLapse);
                 }
                 catch(Exception event){}
@@ -211,8 +213,8 @@ public class BallController implements Initializable {
     For each ball that gets added to the pane (and in doing so the observable arraylist) we added that ball to a thread
     contained in a threadpool.*/
     private void detectCollision(double maxX, double maxY){
-
-        //for loop is preferred to stream as we iterate through each ball in the arraylist
+        //detect collision begins by checking for collisions with the pane boundaries, this is what the parameters are used for
+        //for loop is preferred to stream as we iterate through each ball in the arraylist, although a stream is possible too
         for (int thisBall = 0; thisBall < arrayOfBalls.size(); thisBall++) {
             //Use final variable to maintain thread safety
             final int ballNumber = thisBall;
@@ -253,10 +255,12 @@ public class BallController implements Initializable {
     private void wallCollision(Ball ball1, double maxX, double maxY){
         double xVel = ball1.getXVelocity();
                         double yVel = ball1.getYVelocity();
+                        //check the sides
                         if ((ball1.getCenterX() - ball1.getRadius() <= 0 && xVel < 0)
                                 || (ball1.getCenterX() + ball1.getRadius() >= maxX && xVel > 0)) {
                             ball1.setXVelocity(-xVel);
                         }
+                        //check the top and bottom of the pane
                         if ((ball1.getCenterY() - ball1.getRadius() <= 0 && yVel < 0)
                                 || (ball1.getCenterY() + ball1.getRadius() >= maxY && yVel > 0)) {
                             ball1.setYVelocity(-yVel);
