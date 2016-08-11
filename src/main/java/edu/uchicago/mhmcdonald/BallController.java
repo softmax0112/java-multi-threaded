@@ -2,6 +2,7 @@ package edu.uchicago.mhmcdonald;
 
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
@@ -24,7 +25,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 
 import static java.lang.Math.*;
 import static javafx.scene.paint.Color.*;
@@ -213,9 +213,9 @@ public class BallController implements Initializable {
     private void detectCollision(double maxX, double maxY){
 
         //for loop is preferred to stream as we iterate through each ball in the arraylist
-        for (int i = 0; i < arrayOfBalls.size(); i++) {
+        for (int thisBall = 0; thisBall < arrayOfBalls.size(); thisBall++) {
             //Use final variable to maintain thread safety
-            final int ballNumber = i;
+            final int ballNumber = thisBall;
             //Use ExecutorService for managing the pool of threads
             threadPool.execute(() -> {
 
@@ -227,9 +227,9 @@ public class BallController implements Initializable {
                 //This nested for loop is where we get the n^2 time, but there is no alternate way that I can think of
                 //We check each of the neighboring balls for collision with ball1
                 //As above, a for loop is preferable here to a stream
-                for (int j = ballNumber + 1; j < arrayOfBalls.size(); j++ ) {
+                for (int nextBall = ballNumber + 1; nextBall < arrayOfBalls.size(); nextBall++ ) {
 
-                    Ball ball2 = arrayOfBalls.get(j);
+                    Ball ball2 = arrayOfBalls.get(nextBall);
 
                     //Get differences between centers of each of two balls, will be used to check for intersection
 
@@ -250,16 +250,16 @@ public class BallController implements Initializable {
     }
 
     //this method is called by detect collision method above to see if a ball has encountered the frame's boundaries
-    private void wallCollision(Ball b1, double maxX, double maxY){
-        double xVel = b1.getXVelocity();
-                        double yVel = b1.getYVelocity();
-                        if ((b1.getCenterX() - b1.getRadius() <= 0 && xVel < 0)
-                                || (b1.getCenterX() + b1.getRadius() >= maxX && xVel > 0)) {
-                            b1.setXVelocity(-xVel);
+    private void wallCollision(Ball ball1, double maxX, double maxY){
+        double xVel = ball1.getXVelocity();
+                        double yVel = ball1.getYVelocity();
+                        if ((ball1.getCenterX() - ball1.getRadius() <= 0 && xVel < 0)
+                                || (ball1.getCenterX() + ball1.getRadius() >= maxX && xVel > 0)) {
+                            ball1.setXVelocity(-xVel);
                         }
-                        if ((b1.getCenterY() - b1.getRadius() <= 0 && yVel < 0)
-                                || (b1.getCenterY() + b1.getRadius() >= maxY && yVel > 0)) {
-                            b1.setYVelocity(-yVel);
+                        if ((ball1.getCenterY() - ball1.getRadius() <= 0 && yVel < 0)
+                                || (ball1.getCenterY() + ball1.getRadius() >= maxY && yVel > 0)) {
+                            ball1.setYVelocity(-yVel);
                         }
 
     }
@@ -318,26 +318,28 @@ public class BallController implements Initializable {
          The else statement below is called when adding a single ball where color, and size are inputs provided by the
          user via the JavaFX GUI.*/
         if (multipleBalls == true) {
-            final Random rng = new Random();
+            final Random range = new Random();
 
             for (int thisBall = 0; thisBall < numBalls; thisBall++) {
-                double radius = minRadius + (maxRadius - minRadius) * rng.nextDouble();
+                double radius = minRadius + (maxRadius - minRadius) * range.nextDouble();
                 double mass = Math.pow((radius / 40), 3);
 
-                final double speed = minSpeed + (maxSpeed - minSpeed) * rng.nextDouble();
-                final double angle = 2 * PI * rng.nextDouble();
+                final double speed = minSpeed + (maxSpeed - minSpeed) * range.nextDouble();
+                final double angle = 2 * PI * range.nextDouble();
                 Ball ball = new Ball(initialX, initialY, radius, speed * cos(angle),
                         speed * sin(angle), mass);
                 ball.getView().setFill(COLORS[thisBall % COLORS.length]);
                 arrayOfBalls.add(ball);
             }
         } else {
-            final Random rng = new Random();
+            //this portion of code is called when a single ball gets added by the user
+            final Random range = new Random();
             double radius = maxRadius;
             double mass = Math.pow((radius / 40), 3);
 
             final double speed = minSpeed + (maxSpeed - minSpeed);
-            final double angle = 2 * PI * rng.nextDouble();
+            //angle is still random
+            final double angle = 2 * PI * range.nextDouble();
             Ball ball = new Ball(initialX, initialY, radius, speed * cos(angle),
                     speed * sin(angle), mass);
             ball.getView().setFill(colorAppearance);
@@ -376,8 +378,12 @@ public class BallController implements Initializable {
         int threadCount = ManagementFactory.getThreadMXBean().getThreadCount();
         System.out.println("Just before exiting the proThreaded Program, there were " + threadCount + " threads in use." );
 
+        Platform.exit();
+        System.exit(0);
+
         threadPool.shutdown(); // Disable new tasks from being submitted
         try {
+
             // Wait a while for existing tasks to terminate
             if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
                 threadPool.shutdownNow(); // Cancel currently executing tasks
