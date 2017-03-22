@@ -1,16 +1,14 @@
-# README #
-
+# Project README #
 
 
 ### What is this repository for? ###
 
-proThreaded Assignment for MPCS Advanced Java Class. 
-Notice: upon exiting the application, the user should be able to see a print statement that shows a count of the threads in use at the start and end of the program's execution.
-
+This JavaFX application was an assignment for my Advanced Java Class. 
+This a multi-threaded application in which a user can add balls to the JavaFX window. Balls bounce off of walls, and each other. 
 
 ### Attribution Notice ###
 
-For the ProThreaded project, I have borrowed code from the following sources, which are referenced throughout the .java files. 
+For the ProThreaded project, I have used code from the following sources, which are referenced throughout the .java files. 
 
 **sources**:
 * http://stackoverflow.com/questions/1250643/how-to-wait-for-all-threads-to-finish-using-executorservice
